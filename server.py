@@ -48,7 +48,7 @@ def upload_file():
 		pdf.output("C:/Users/bodya/Desktop/web server/uploaded_files/your_file.pdf", "F")
 		return redirect(url_for('download_file', name='your_file.pdf'))
 
-@app.route("/index.html")
+@app.route("/")
 def my_home():
     return render_template('index.html')
 
