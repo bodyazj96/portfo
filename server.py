@@ -33,14 +33,11 @@ def preview_pdf_with_images(name):
 @app.route('/imgtopdf', methods=['GET', 'POST'])
 def insert_images_to_pdf():
 	
-"""
-This function inserts images to a pdf it creates. One page - one image
-
-"""
+#   This function inserts images to a pdf it creates. One page - one image
 
     if request.method == 'POST':
         
-	# verifying reCAPTCHA:
+# 	verifying reCAPTCHA:
 	
         if recaptcha.verify():
             message = 'Thanks for filling out the form!'
@@ -49,16 +46,15 @@ This function inserts images to a pdf it creates. One page - one image
             flash(message, 'error')
             return render_template('imgtopdf.html')
 
-        # removing a pdf file created by a previous user from upload folder:
+#       removing a pdf file created by a previous user from upload folder:
 	
         for file in glob.glob(f"{app.config['UPLOAD_FOLDER']}/*.*"):
             os.remove(file)
         
-	"""
-	uploading user's images; creating directory for user's files (if does not exist);
-	checking if user's files have allowed extensions; uploading files to user_dir:
 	
-	"""
+# 	uploading user's images; creating directory for user's files (if does not exist);
+# 	checking if user's files have allowed extensions; uploading files to user_dir:
+	
 	
         files = request.files.getlist('files[]')
         if not os.path.exists(user_dir):
@@ -69,10 +65,10 @@ This function inserts images to a pdf it creates. One page - one image
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(user_dir, filename))
         
-	"""
-	adjusting images' resolution for better efficiency; sharpening the images;
-        using EXIF code to position images correctly on page (according to their native orientation):
-	"""
+	
+# 	adjusting images' resolution for better efficiency; sharpening the images;
+#       using EXIF code to position images correctly on page (according to their native orientation):
+	
 	
         for item in glob.glob(f"{user_dir}/*.*"):
             img = Image.open(item)
@@ -81,10 +77,9 @@ This function inserts images to a pdf it creates. One page - one image
             im = ImageOps.exif_transpose(i)
             im.save(item)
 	
-	"""
-	inserting adjusted images to a pdf page by page;
-        user chooses image's position on page and the name of the pdf file which will be created: 
-	"""
+	
+# 	inserting adjusted images to a pdf page by page;
+#       user chooses image's position on page and the name of the pdf file which will be created: 
         
         pdf = FPDF()
         imagelist=[]
@@ -107,11 +102,11 @@ This function inserts images to a pdf it creates. One page - one image
                 pdf.image(image, x=0, y=150, w=110)
         pdf.output(f"{app.config['UPLOAD_FOLDER']}/{pdftitle}.pdf", "F")
 	
-	# removing user_dir containing user's images:
+# 	removing user_dir containing user's images:
 	
         shutil.rmtree(user_dir)
 	
-	# redirecting user to the page containing PDF viewer; user can view their pdf file with images there:
+# 	redirecting user to the page containing PDF viewer; user can view their pdf file with images there:
 	
         return redirect(url_for('preview_pdf_with_images', name=f'{pdftitle}.pdf'))
 
